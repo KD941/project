@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup form</title>
+    <script>
+        function senddata()
+        {
+            const username = document.getElementById("username").value;
+            const userpassword = document.getElementById("password").value;
+
+            const useremail = document.getElementById("email").value;
+            const userphone = document.getElementById("phone").value;
+            fetch("http://127.0.0.1:8000/user/signup",{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: username,
+                    email: useremail,
+                    password: userpassword,
+                    phone: userphone
+                })
+                
+            }).then((res)=>res.json()).then((res)=>{
+                document.getElementById("a1").innerHTML=JSON.stringify(res);
+            })
+
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="number" id="phone" placeholder="Phone Number" required>
+        <input type="submit" value="Sign Up" onclick="senddata()">
+        <h2 id="a1"></h2>
+    </div>
+
+</body>
+</html>
