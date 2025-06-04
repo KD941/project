@@ -24,7 +24,7 @@
                         password: userpassword
                     })
                 }).then((res) => res.json()).then((res) => {
-                    document.getElementById("a1").innerHTML = JSON.stringify(res);
+                    document.getElementById("a1").innerHTML = JSON.stringify(res.token);
                 })
             }
     </script>

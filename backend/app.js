@@ -54,11 +54,11 @@ server.post("/user/login",async (req,res)=>
         {
             const token= libRandom.generate(7);
             const user=result[0]
-            await client.updateOne(
+            await collection.updateOne(
                 {email: req.body.email},
                 {$set: {token: token}}
             );
-            res.json({message:'Login Successful',token: token,user:user});
+            res.json({message:'Login Successful',token: token});
             console.log("Login Successful");
             localStorage.setItem('token', token);
 
