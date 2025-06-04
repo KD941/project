@@ -1,5 +1,6 @@
 const libExpress = require('express');
 const libCors = require('cors');
+const libRandom=require('randomstring');
 const {MongoClient}= require('mongodb');
 const server= libExpress();
 server.use(libExpress.json());
@@ -32,6 +33,7 @@ server.post('/user/signup',async(req,res)=>
 console.log("User Created Successfully");
 
         }
+        client.close();
     }
     else
     {
@@ -39,6 +41,39 @@ console.log("User Created Successfully");
     }
 })
 
+//for login(creating tokens)
+server.post("/user/login",async (req,res)=>
+{
+    if(req.body.email&&req.body.password)
+    {
+        await client.connect();
+        const db= await client.db('IMS');
+        const collection = await db.collection('users');
+        const result = await collection.find({email: req.body.email,password:req.body.password}).toArray();
+        if(result.length>0)
+        {
+            const token= libRandom.generate(7);
+            const user=result[0]
+            await client.updateOne(
+                {email: req.body.email},
+                {$set: {token: token}}
+            );
+            res.json({message:'Login Successful',token: token,user:user});
+            console.log("Login Successful");
+            localStorage.setItem('token', token);
+
+        }
+        else{
+            res.json({message:"Invalid Credentials"});
+            console.log("Invalid Credentials");
+        }
+
+
+    }
+    else{
+        res.json({error:"ALL FIELDS REQUIRED"});
+    }
+})
 server.listen(8000,()=>{
     console.log("Server is running on port 8000");
 })
