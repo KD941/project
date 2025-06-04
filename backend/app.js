@@ -2,6 +2,7 @@ const libExpress = require('express');
 const libCors = require('cors');
 const libRandom=require('randomstring');
 const {MongoClient}= require('mongodb');
+const { ObjectId}=require('mongodb');
 const server= libExpress();
 server.use(libExpress.json());
 const client= new MongoClient('mongodb://Admin:Karmdip123@localhost:27017/IMS?authSource=IMS');
@@ -10,7 +11,7 @@ server.use(libCors());
 //for signup
 server.post('/user/signup',async(req,res)=>
 {
-    if(req.body.name&&req.body.email&&req.body.password&&req.body.phone)
+    if(req.body.name && req.body.email&&req.body.password&&req.body.phone)
     {await client.connect();
         const db= await client.db('IMS');
         const collection = await db.collection('users');
@@ -40,12 +41,32 @@ console.log("User Created Successfully");
         res.json({message:"All fields required"});
     }
 })
-
-//for login(creating tokens)
-server.post("/user/login",async (req,res)=>
+server.get("user/roles",async(req,res)=>
 {
-    if(req.body.email&&req.body.password)
-    {
+    await client.connect();
+    const db= await client.db('IMS');
+    const collection = await db.collection('roles');
+    const result = await collection.find({token:req.header.token}).toArray();
+    if(result.length>0)
+    { const user=result[0];
+        res.status(200).json({
+            admin:user?.is_admin===true,
+            team_owner:!!user?.owner_of,
+            player:!!user?.playing_for
+
+        })
+    }
+    else{
+        res.status(404).json({message:"No roles found"});
+    }
+    client.close();
+}
+)
+//for login(creating tokens)
+server.post("/token",async (req,res)=>
+{
+    if(req.body.email && req.body.password)
+    {console.log("Login request received");
         await client.connect();
         const db= await client.db('IMS');
         const collection = await db.collection('users');
@@ -53,25 +74,26 @@ server.post("/user/login",async (req,res)=>
         if(result.length>0)
         {
             const token= libRandom.generate(7);
-            const user=result[0]
+            const user=result[0];
             await collection.updateOne(
-                {email: req.body.email},
+                {_id:new ObjectId(user._id)},
                 {$set: {token: token}}
             );
-            res.json({message:'Login Successful',token: token});
+      
+            res.status(200).json({
+                message: 'Login Successful',
+                token: token
+               
+            });
             console.log("Login Successful");
-            localStorage.setItem('token', token);
-
+            client.close();
         }
         else{
-            res.json({message:"Invalid Credentials"});
-            console.log("Invalid Credentials");
+            res.status(401).json({message:"Invalid Credentials"});
         }
-
-
     }
     else{
-        res.json({error:"ALL FIELDS REQUIRED"});
+        res.status(400).json({error:"ALL FIELDS REQUIRED"});
     }
 })
 server.listen(8000,()=>{
