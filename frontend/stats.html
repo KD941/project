@@ -11,33 +11,50 @@
             const urlParams = new URLSearchParams(window.location.search);
             const playerID = urlParams.get('id');
 
-            const res = await fetch(`http://127.0.0.1:8000/player/stats`,
+            const res = await fetch(`http://127.0.0.1:8000/player/${playerID}/stats`,
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        "id":JSON.stringify({ id: playerID  })
+                        token: localStorage.getItem("token")
                     }
-                 
+
 
                 });
             const stats = await res.json();
             console.log("Server response:", stats);
-          
-                    const print = `<div id=" ${stats._id}" class="card" style="width: 18rem;">
+
+            const print = `<div align="center" id=" ${stats._id}" class="card " style="width: 18rem;">
                         <img src="${stats.image}" class="card-img-top" alt="${stats.name}">
                         <div class="card-body">
                             <h5 class="card-title">${stats.name}</h5>
-                            <p class="card-text">Name: ${stats.name} is a player of ${stats.playing_for}.</p>
-                            <p class="card-text">Matches Played: ${stats.matches}</p>
+                           <span > Name</span>
+                          <input type="text" class="form-control" id="name" value="${stats.name}" disabled>
+                           <span> Team</span>
+                           <input type="text" class="form-control" id="name" value="${stats.playing_for}" disabled>
+                            <span> Matches</span>
+                           <input type="text" class="form-control" id="name" value="${stats.matches}" disabled>
+                            <span> Scores</span>
+                            <input type="text" class="form-control" id="name" value="${stats.score}" disabled>
+                             <span> Wickets</span>
+                            <input type="text" class="form-control" id="name" value="${stats.wickets}" disabled>
+                             <span> Catches</span>
+                            <input type="text" class="form-control" id="name" value="${stats.catches}" disabled>
+                           
+
+                         
                         </div>
                     </div>`;
+            document.getElementById("playerStats").innerHTML = print;
+
         }
         getStats();
     </script>
 </head>
 
 <body>
-
+    <center>
+        <div id="playerStats"></div>
+    </center>
 </body>
 
 </html>

@@ -123,12 +123,12 @@ server.get("/teams",async (req,res)=>
     }
     client.close();
 })
-server.get("player/stats", async (req,res)=>
-{
+server.get("/player/:id/stats", async (req,res)=>
+{ console.log("Player stats request received");
     await client.connect();
     const db = await client.db('IMS');
     const collection = await db.collection('users');
-    const result = await collection.find({"_id":req.headers.id}).toArray();
+    const result = await collection.find({"_id":new ObjectId(req.params.id)}).toArray();
     if (result.length > 0) {
      res.status(200).json(result[0]);
         console.log("Player stats fetched successfully");
