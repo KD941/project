@@ -10,9 +10,9 @@
         async function getroles()
         {  
 
-            fetch("http://127.0.0.1:8000/token",
+            fetch("http://127.0.0.1:8000/user/roles",
                 {
-                    method: "POST",
+              
                     headers: {
                         "Content-Type": "application/json",
                         token: localStorage.getItem("token")
@@ -21,10 +21,10 @@
             }) 
             .then((res)=>res.json()).then((res)=>{
                 console.log("Server response:", res);
-                if (res.admin === true) {
-                    document.getElementById("ADMIN").style.display = "block";
+                if (!res.admin === true) {
+                    document.getElementById("ADMIN").style.display = "none";
                    
-                } else if (res.team_owner=== true) {
+                } else if (!res.team_owner=== true) {
                     
                     document.getElementById("TEAM").style.display = "none";
                 } 
@@ -37,7 +37,7 @@
 
 <body>
     <div class="center">
-    <div id="common1" class="card" style="width: 18rem;">
+   <a href="players.html"> <div id="common1" class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">common page 1</h5>
             <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
@@ -45,8 +45,8 @@
                 content.</p>
            
         </div>
-    </div>
-
+    </div></a>
+<a href="team.html">
     <div id="common1" class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">common page 2</h5>
@@ -56,6 +56,7 @@
            
         </div>
     </div>
+    </a>
     <div id="TEAM" class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">Card for team owner</h5>
