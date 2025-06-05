@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>team info</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        async function getTeamInfo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamID = urlParams.get('id');
+
+            const res = await fetch(`http://127.0.0.1:8000/teams/${teamID}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        token: localStorage.getItem("token")
+                    }
+                });
+                const data= await res.json();
+            console.log("Server response:", data);
+            const teamInfo = document.getElementById("teamInfo");
+            const print = `<div id="${data._id}" class="card" style="width: 18rem;">
+                            <img src="${data.image}" class="card-img-top" alt="${data.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${data.name}</h5>
+                                <input type="text" class="form-control" id="name" value="${data.name}" disabled>
+                                <input type="text" class="form-control" id="state" value="${data.state}" disabled>
+                                <input type="text" class="form-control" id="color" value="${data.color}" disabled>
+                                <button id="submitBtn" class="btn btn-primary" onClick="updateTeam()" hidden>Update</button>
+                            </div>
+                        </div>`;
+                    
+                    teamInfo.innerHTML = print;
+                
+                   const res2 = await fetch("http://127.0.0.1:8000/user/roles",
+                {
+                    headers:{
+                        contentType: "application/json",
+                        token: localStorage.getItem("token")
+                    }
+                }
+            )
+            const TO = await res2.json();
+            console.log("Server response:", data);
+            if (TO.team_owner===true) {
+               const inputs= document.getElementsByTagName("input");
+               const  submitBtn = document.getElementById("submitBtn");
+                submitBtn.hidden = false;
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].disabled = false;
+                }
+
+                console.log("Admin access granted");
+            }}
+
+
+            </script>
+</head>
+<body>
+    <div id="teamInfo"></div>
+    
+</body>
+</html>

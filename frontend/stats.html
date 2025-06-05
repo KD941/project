@@ -7,6 +7,7 @@
     <title>stats</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
+       
         async function getStats() {
             const urlParams = new URLSearchParams(window.location.search);
             const playerID = urlParams.get('id');
@@ -22,32 +23,93 @@
                 });
             const stats = await res.json();
             console.log("Server response:", stats);
-
-            const print = `<div align="center" id=" ${stats._id}" class="card " style="width: 18rem;">
+          
+            
+            const print = `<div  id=" ${stats._id}" class="card" style="width: 18rem;margine-top: 20px;">
                         <img src="${stats.image}" class="card-img-top" alt="${stats.name}">
                         <div class="card-body">
                             <h5 class="card-title">${stats.name}</h5>
-                           <span > Name</span>
-                          <input type="text" class="form-control" id="name" value="${stats.name}" disabled>
-                           <span> Team</span>
-                           <input type="text" class="form-control" id="name" value="${stats.playing_for}" disabled>
-                            <span> Matches</span>
-                           <input type="text" class="form-control" id="name" value="${stats.matches}" disabled>
-                            <span> Scores</span>
-                            <input type="text" class="form-control" id="name" value="${stats.score}" disabled>
-                             <span> Wickets</span>
-                            <input type="text" class="form-control" id="name" value="${stats.wickets}" disabled>
-                             <span> Catches</span>
-                            <input type="text" class="form-control" id="name" value="${stats.catches}" disabled>
-                           
+                            <table>
+                         <tr>
+                           <td><lable > Name</lable></td>
 
-                         
+                          <td><input type="text" class="form-control" id="name" value="${stats.name}" disabled></td></tr>
+                         <tr>
+                          <td> <lable> Team</lable></td>
+
+                          <td> <input type="text" class="form-control" id="team" value="${stats.playing_for}" disabled></td></tr>
+                         <tr>
+                           <td> <lable> Matches</lable></td>
+
+                          <td> <input type="text" class="form-control" id="match" value="${stats.matches}" disabled></td></tr>
+                                 <tr>
+                            <td><lable> Scores</lable></td>
+
+                            <td><input type="text" class="form-control" id="score" value="${stats.score}" disabled></td></tr>
+                                <tr>
+                            <td> <lable> Wickets</lable></td>
+
+                           <td> <input type="text" class="form-control" id="wicket" value="${stats.wickets}" disabled></td></tr>
+                             <tr>
+                            <td> <lable> Catches</lable></td>
+
+                           <td> <input type="text" class="form-control" id="catch" value="${stats.catches}" disabled></td>
+                           </tr>
+                            <tr>
+                                <td> <button id="submitBtn"class="btb btn-primary" onClick="updatePlayer()" hidden >submit</button></td></tr>
+                         </table>
                         </div>
                     </div>`;
             document.getElementById("playerStats").innerHTML = print;
+              const res2 = await fetch("http://127.0.0.1:8000/user/roles",
+                {
+                    headers:{
+                        contentType: "application/json",
+                        token: localStorage.getItem("token")
+                    }
+                }
+            )
+            const data = await res2.json();
+            console.log("Server response:", data);
+            if (data.admin===true) {
+               const inputs= document.getElementsByTagName("input");
+               const  submitBtn = document.getElementById("submitBtn");
+                submitBtn.hidden = false;
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].disabled = false;
+                }
+
+                console.log("Admin access granted");
+            }
 
         }
         getStats();
+        async function updatePlayer() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const playerID = urlParams.get('id');
+            const name = document.getElementById("name").value;
+            const team = document.getElementById("team").value;
+            const match = document.getElementById("match").value;
+            const score = document.getElementById("score").value;
+            const wicket = document.getElementById("wicket").value;
+            const catchs = document.getElementById("catch").value;
+
+            const res = await fetch(`http://127.0.0.1:8000/player/${playerID}/update`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        token: localStorage.getItem("token")
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        playing_for: team,
+                        matches: match,
+                        score: score,
+                        wickets: wicket,
+                        catches: catchs
+                    })
+                });}
     </script>
 </head>
 

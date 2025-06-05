@@ -60,6 +60,38 @@ server.get("/user/roles", async (req, res) => {
     client.close();
 }
 )
+server.put("/player/:id/update",async (req,res)=>
+{
+    if (req.body.name && req.body.score && req.body.matches && req.body.playing_for&&req.body.catches&&req.body.wickets) {
+        console.log("Player update request received");
+        await client.connect();
+        const db = await client.db('IMS');
+        const collection = await db.collection('users');
+        const result = await collection.find({ _id: new ObjectId(req.params.id) }).toArray();
+        if (result.length > 0) {
+            const user = result[0];
+            await collection.updateOne(
+                { _id: new ObjectId(user._id) },
+                {
+                    $set: {
+                        name: req.body.name,
+                        score: req.body.score,
+                        matches: req.body.matches,
+                        playing_for: req.body.playing_for,
+                        catches:req.body.catch,
+                        wickets:req.body.wickets
+                    }
+                }
+            );
+            res.status(200).json({ message: "Player updated successfully" });
+            console.log("Player updated successfully");
+        }
+        else {
+            res.status(404).json({ message: "Player not found" });
+        }
+        client.close();
+    }
+})
 //for login(creating tokens)
 server.post("/token", async (req, res) => {
     if (req.body.email && req.body.password) {
@@ -120,6 +152,21 @@ server.get("/teams",async (req,res)=>
     }
     else {
         res.status(404).json({ message: "No teams found" });
+    }
+    client.close();
+})
+server.get("/team/:id", async (req, res) => {
+    console.log("Team request received");
+    await client.connect();
+    const db = await client.db('IMS');
+    const collection = await db.collection('teams');
+    const result = await collection.find({ _id: new ObjectId(req.params.id) }).toArray();
+    if (result.length > 0) {
+        res.status(200).json(result[0]);
+        console.log("Team fetched successfully");
+    }
+    else {
+        res.status(404).json({ message: "No team found" });
     }
     client.close();
 })
