@@ -155,7 +155,7 @@ server.get("/teams",async (req,res)=>
     }
     client.close();
 })
-server.get("/team/:id", async (req, res) => {
+server.get("/teams/:id", async (req, res) => {
     console.log("Team request received");
     await client.connect();
     const db = await client.db('IMS');
@@ -170,6 +170,33 @@ server.get("/team/:id", async (req, res) => {
     }
     client.close();
 })
+server.put("/teams/:id/updateteam", async (req, res) => 
+    {
+    console.log("Team update request received");
+      await client.connect();
+    const db = await client.db('IMS');
+    const collection = await db.collection('teams');
+    const result = await collection.find({ _id: new ObjectId(req.params.id) }).toArray();
+    if (result.length > 0) {
+        const team = result[0];
+    
+        await collection.updateOne(
+                { _id: new ObjectId(team._id) },
+                {
+                    $set: {
+                        team_name: req.body.name,
+                        state: req.body.state,
+                        color:req.body.color
+                    }
+                })
+
+       
+    }
+    else {
+        res.status(404).json({ message: "No team found" });
+    }
+    client.close();
+    })
 server.get("/player/:id/stats", async (req,res)=>
 { console.log("Player stats request received");
     await client.connect();
