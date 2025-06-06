@@ -109,7 +109,17 @@
                         wickets: wicket,
                         catches: catchs
                     })
-                });}
+                })
+                response = await res.json();
+                if(res.status  === 200)
+                {
+                    alert("Player stats updated successfully");
+                    window.location.reload(); ;
+                }
+                else
+                {
+                    alert("Failed to update player stats: " + response.message);
+                };}
     </script>
 </head>
 

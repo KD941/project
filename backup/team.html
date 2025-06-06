@@ -30,11 +30,29 @@
                         </div>
                     </div>`;
                     teamList.innerHTML = teamList.innerHTML + print;
+        }
+           const res2 = await fetch("http://127.0.0.1:8000/user/roles",
+                {
+                    headers:{
+                        "contentType": "application/json",
+                        token: localStorage.getItem("token")
+                    }
+                }
+            )
+            const TO = await res2.json();
+            console.log("Server response:", TO);
+      if(TO.admin===true)
+        {
+            const Add_team=document.getElementById("Addteam");
+            Add_team.innerHTML = `<a class="nav-link" href="team_form.html"><button class="btn btn-primary">Add Team</button></a>`;
+            console.log("Admin access granted");
+            
         }}
 getTeams();
     </script>
 </head>
 <body>
+    <div id="Addteam"></div>
     <div id="teamList"></div>
 </body>
 </html>

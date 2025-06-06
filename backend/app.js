@@ -78,7 +78,7 @@ server.put("/player/:id/update",async (req,res)=>
                         score: req.body.score,
                         matches: req.body.matches,
                         playing_for: req.body.playing_for,
-                        catches:req.body.catch,
+                        catches:req.body.catches,
                         wickets:req.body.wickets
                     }
                 }
