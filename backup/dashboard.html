@@ -10,7 +10,7 @@
         async function getroles()
         {  
 
-            fetch("http://127.0.0.1:8000/user/roles",
+          const res = await fetch("http://127.0.0.1:8000/user/roles",
                 {
               
                     headers: {
@@ -19,18 +19,22 @@
                     },
                   
             }) 
-            .then((res)=>res.json()).then((res)=>{
-                console.log("Server response:", res);
-                if (!res.admin === true) {
+            const data =  res.json();
+                console.log("Server response:", data);
+                if (!data.admin === true) {
                     document.getElementById("ADMIN").style.display = "none";
                    
-                } else if (!res.team_owner=== true) {
+                } else if (!data.team_owner=== true) {
                     
                     document.getElementById("TEAM").style.display = "none";
-                } 
-            })
+                } else if (data.team_owner === true)
+                {
+                    const owner = document.getElementById("TEAM_O");
+                    owner.href = "manage_team.html?id=" + data.team_id;
+                }
+            }
 
-        }
+    
         getroles();
     </script>
 </head>
@@ -57,7 +61,7 @@
         </div>
     </div>
     </a>
-    <a>
+    <a id="TEAM_O" href="manage_team.html">
     <div id="TEAM" class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">Card for team owner</h5>

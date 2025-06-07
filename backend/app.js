@@ -139,6 +139,23 @@ server.get("/player", async (req, res) => {
     }
     client.close();
 })
+server.delete("/player/:id", async (req, res) => {
+await client.connect();
+const db = await client.db('IMS');
+const collection = await db.collection('users');
+const result = await collection.find({ _id: new ObjectId(req.params.id) }).toArray();
+if (result.length > 0) {
+    await collection.deleteOne({ _id: new ObjectId(req.params.id) });
+    res.status(200).json({ message: "Player deleted successfully" });
+    console.log("Player deleted successfully");
+}
+else 
+{
+    res.status(404).json({ message: "No player found" });
+}
+client.close();
+})
+
 server.get("/teams",async (req,res)=>
 {
     await client.connect();
@@ -152,6 +169,24 @@ server.get("/teams",async (req,res)=>
     }
     else {
         res.status(404).json({ message: "No teams found" });
+    }
+    client.close();
+})
+server.delete("/teams/:id",async (req,res)=>
+{
+    console.log("delete req recieved");
+    await client.connect();
+    const db = await client.db('IMS');
+    const collection = await db.collection('teams');
+    const result = await collection.find({ _id: new ObjectId(req.params.id) }).toArray();
+    if(result.length>0)
+    {
+        await collection.deleteOne({ _id: new ObjectId(req.params.id) });
+        res.status(200).json({ message: "Team deleted successfully" });
+        console.log("Team deleted successfully");
+    }
+    else {
+        res.status(404).json({ message: "No team found" });
     }
     client.close();
 })
@@ -212,6 +247,49 @@ server.get("/player/:id/stats", async (req,res)=>
         res.status(404).json({ message: "No players found" });
     }
     client.close();
+})
+server.post("/teams/create", async (req, res) => {
+    if (req.body.name && req.body.state && req.body.color) {
+        console.log("Team creation request received");
+        await client.connect();
+        const db = await client.db('IMS');
+        const collection = await db.collection('teams');
+        const team = {
+            team_name: req.body.name,
+            state: req.body.state,
+            color: req.body.color
+        }
+        await collection.insertOne(team);
+        res.status(200).json({ message: "Team created successfully" });
+        console.log("Team created successfully");
+        client.close();
+    }
+    else {
+        res.status(400).json({ message: "All fields are required" });
+    }
+})
+server.post("/player/create", async (req, res) => {
+    if (req.body.name && req.body.score && req.body.matches && req.body.playing_for&&req.body.catches&&req.body.wickets) {
+        console.log("Player creation request received");
+        await client.connect();
+        const db = await client.db('IMS');
+        const collection = await db.collection('users');
+        const player = {
+            name: req.body.name,
+            score: req.body.score,
+            matches: req.body.matches,
+            playing_for: req.body.playing_for,
+            catches:req.body.catches,
+            wickets:req.body.wickets
+        }
+        await collection.insertOne(player);
+        res.status(200).json({ message: "Player created successfully" });
+        console.log("Player created successfully");
+        client.close();
+    }
+    else {
+        res.status(400).json({ message: "All fields are required" });
+    }
 })
 server.listen(8000, () => {
     console.log("Server is running on port 8000");
